@@ -28,15 +28,8 @@ class Television:
         """
         This method is used to mute and unmute the TV
         """
-
         if self.__status:
-            if self.__muted:
-                self.__muted = False
-                self.__volume = self.__temp_volume
-            else:
-                self.__temp_volume = self.__volume
-                self.__muted = True
-                self.__volume = Television.MIN_VOLUME
+            self.__muted = not self.__muted
 
     def channel_up(self) -> None:
         """
@@ -64,28 +57,30 @@ class Television:
         """
         This method is used to increase the volume of the TV
         """
-        if self.__status:
-            Television.mute(self)
-            if self.__volume == Television.MAX_VOLUME:
-                self.__volume = self.__volume
-            else:
-                self.__volume = self.__temp_volume + 1
+        if self.__status and not self.__muted:
+            if self.__volume < Television.MAX_VOLUME:
+                self.__volume = self.__volume + 1
+        elif self.__status and self.__muted:
+                self.__volume = self.__volume + 1
+                self.__muted = not self.__muted
 
     def volume_down(self) -> None:
         """
         This method is used to decrease the volume of the TV
         """
-
-        if self.__status:
-            Television.mute(self)
-            if self.__volume == Television.MIN_VOLUME:
-                self.__volume = self.__volume
-            else:
-                self.__volume = self.__temp_volume - 1
+        if self.__status and not self.__muted:
+            if self.__volume > Television.MIN_VOLUME:
+                self.__volume = self.__volume - 1
+        elif self.__status and self.__muted:
+                self.__volume = self.__volume - 1
+                self.__muted = not self.__muted
 
     def __str__(self) -> str:
         """
         This method is used to provide data back to the main function
         :return:
         """
-        return f'Power = {self.__status}, Channel = {self.__channel}, Volume = {self.__volume}'
+        if self.__muted:
+            return f'Power = {self.__status}, Channel = {self.__channel}, Volume = {Television.MIN_VOLUME}'
+        else:
+            return f'Power = {self.__status}, Channel = {self.__channel}, Volume = {self.__volume}'
